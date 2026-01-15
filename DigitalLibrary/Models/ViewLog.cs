@@ -8,12 +8,16 @@ namespace DigitalLibrary.Models
     {
         [Key]
         public int ViewLogId { get; set; }
+
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }
-        public virtual User? User{ get; set; }
-        [ForeignKey(nameof(Document))]  
+
+        [ForeignKey(nameof(Document))]
         public int DocumentId { get; set; }
-        public virtual Document? Document{ get; set; }
-        public DateTime Time{ get; set; }
+
+        public DateTime Time { get; set; } = DateTime.Now;
+
+        public virtual User? User { get; set; }
+        public virtual Document? Document { get; set; }
     }
 }

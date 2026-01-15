@@ -32,11 +32,44 @@ namespace DigitalLibrary.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Công nghệ thông tin"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Khoa học tự nhiên"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Khoa học xã hội"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            CategoryName = "Văn học"
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            CategoryName = "Kinh tế"
+                        },
+                        new
+                        {
+                            CategoryId = 6,
+                            CategoryName = "Y học"
+                        });
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.Document", b =>
@@ -48,16 +81,17 @@ namespace DigitalLibrary.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<string>("Abstract")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("AccessLevel")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("AuthorName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -66,19 +100,22 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("PublishYear")
+                    b.Property<int?>("PublishYear")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("DocumentId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Title");
 
                     b.ToTable("Documents");
                 });
@@ -141,9 +178,11 @@ namespace DigitalLibrary.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
                     b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
@@ -173,11 +212,34 @@ namespace DigitalLibrary.Migrations
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            RoleName = "Librarian"
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            RoleName = "Student"
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            RoleName = "Teacher"
+                        });
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.User", b =>
@@ -188,30 +250,43 @@ namespace DigitalLibrary.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool?>("Gender")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -249,7 +324,7 @@ namespace DigitalLibrary.Migrations
                     b.HasOne("DigitalLibrary.Models.Category", "Category")
                         .WithMany("Documents")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -317,7 +392,7 @@ namespace DigitalLibrary.Migrations
                     b.HasOne("DigitalLibrary.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");

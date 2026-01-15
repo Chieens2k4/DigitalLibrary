@@ -7,8 +7,11 @@ namespace DigitalLibrary.Models
     {
         [Key]
         public int RoleId { get; set; }
-        [Required]
-        public string RoleName{ get; set; }
-        public IEnumerable<User>? Users{ get; set; }
+
+        [Required(ErrorMessage = "Tên vai trò là bắt buộc")]
+        [StringLength(50)]
+        public string RoleName { get; set; } = string.Empty;
+
+        public virtual ICollection<User> Users { get; set; } = new List<User>();
     }
 }
