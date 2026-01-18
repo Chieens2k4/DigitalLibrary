@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalLibrary.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using DigitalLibrary.DTOs;
 using DigitalLibrary.Models;
 using DigitalLibrary.Services;
@@ -11,17 +10,17 @@ namespace DigitalLibrary.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly DigitalLibraryContext _context;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtTokenService _jwtTokenService;
 
         public AuthController(
-            DigitalLibraryContext context,
-            IPasswordHasher passwordHasher,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IJwtTokenService jwtTokenService)
         {
-            _context = context;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
+            _signInManager = signInManager;
             _jwtTokenService = jwtTokenService;
         }
 
@@ -32,7 +31,8 @@ namespace DigitalLibrary.Controllers
             try
             {
                 // Kiểm tra email đã tồn tại
-                if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
+                var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+                if (existingUser != null)
                 {
                     return BadRequest(new ApiResponse<LoginResponseDto>
                     {
@@ -41,36 +41,46 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                // Tạo user mới với role Student (RoleId = 3)
-                var user = new User
+                // Tạo user mới với role Student (RoleId = 4)
+                var user = new ApplicationUser
                 {
+                    UserName = registerDto.Email,
                     Email = registerDto.Email,
-                    PasswordHash = _passwordHasher.HashPassword(registerDto.Password),
                     FirstName = registerDto.FirstName,
                     LastName = registerDto.LastName,
                     DateOfBirth = registerDto.DateOfBirth,
                     Gender = registerDto.Gender,
-                    RoleId = 3, // Student
                     CreatedAt = DateTime.Now,
-                    IsActive = true
+                    IsActive = true,
+                    EmailConfirmed = true // Auto confirm for now
                 };
 
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+                var result = await _userManager.CreateAsync(user, registerDto.Password);
 
-                // Load role
-                await _context.Entry(user).Reference(u => u.Role).LoadAsync();
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new ApiResponse<LoginResponseDto>
+                    {
+                        Success = false,
+                        Message = string.Join(", ", result.Errors.Select(e => e.Description))
+                    });
+                }
+
+                // Assign Student role
+                await _userManager.AddToRoleAsync(user, "Student");
 
                 // Tạo token
-                var token = _jwtTokenService.GenerateToken(user);
+                var token = await _jwtTokenService.GenerateTokenAsync(user);
+
+                var roles = await _userManager.GetRolesAsync(user);
 
                 var response = new LoginResponseDto
                 {
-                    UserId = user.UserId,
-                    Email = user.Email,
+                    UserId = user.Id,
+                    Email = user.Email ?? "",
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    RoleName = user.Role?.RoleName ?? "Student",
+                    RoleName = roles.FirstOrDefault() ?? "Student",
                     Token = token
                 };
 
@@ -97,9 +107,7 @@ namespace DigitalLibrary.Controllers
         {
             try
             {
-                var user = await _context.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+                var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
                 if (user == null)
                 {
@@ -119,8 +127,19 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                if (!_passwordHasher.VerifyPassword(loginDto.Password, user.PasswordHash))
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: true);
+
+                if (!result.Succeeded)
                 {
+                    if (result.IsLockedOut)
+                    {
+                        return Unauthorized(new ApiResponse<LoginResponseDto>
+                        {
+                            Success = false,
+                            Message = "Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần"
+                        });
+                    }
+
                     return Unauthorized(new ApiResponse<LoginResponseDto>
                     {
                         Success = false,
@@ -128,15 +147,16 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                var token = _jwtTokenService.GenerateToken(user);
+                var token = await _jwtTokenService.GenerateTokenAsync(user);
+                var roles = await _userManager.GetRolesAsync(user);
 
                 var response = new LoginResponseDto
                 {
-                    UserId = user.UserId,
-                    Email = user.Email,
+                    UserId = user.Id,
+                    Email = user.Email ?? "",
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    RoleName = user.Role?.RoleName ?? "",
+                    RoleName = roles.FirstOrDefault() ?? "",
                     Token = token
                 };
 
@@ -163,7 +183,8 @@ namespace DigitalLibrary.Controllers
         {
             try
             {
-                var exists = await _context.Users.AnyAsync(u => u.Email == email);
+                var user = await _userManager.FindByEmailAsync(email);
+                var exists = user != null;
 
                 return Ok(new ApiResponse<bool>
                 {

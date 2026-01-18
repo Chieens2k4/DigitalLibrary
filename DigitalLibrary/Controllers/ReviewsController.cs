@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using DigitalLibrary.Data;
 using DigitalLibrary.DTOs;
 using DigitalLibrary.Models;
+using DigitalLibrary.Authorization;
 using System.Security.Claims;
 
 namespace DigitalLibrary.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ReviewsController : ControllerBase
     {
         private readonly DigitalLibraryContext _context;
@@ -26,8 +26,7 @@ namespace DigitalLibrary.Controllers
             return int.TryParse(userIdClaim, out var userId) ? userId : null;
         }
 
-        // GET: api/Reviews/document/{documentId}
-        [AllowAnonymous]
+        // GET: api/Reviews/document/{documentId} - Public
         [HttpGet("document/{documentId}")]
         public async Task<ActionResult<ApiResponse<List<ReviewDto>>>> GetDocumentReviews(int documentId)
         {
@@ -67,7 +66,8 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // POST: api/Reviews
+        // POST: api/Reviews - Yêu cầu permission Review:Create
+        [RequirePermission("Review", "Create")]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<ReviewDto>>> CreateReview(CreateReviewDto createReviewDto)
         {
@@ -151,7 +151,8 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // PUT: api/Reviews/{id}
+        // PUT: api/Reviews/{id} - Yêu cầu permission Review:Edit + phải là owner
+        [RequirePermission("Review", "Edit")]
         [HttpPut("{id}")]
         public async Task<ActionResult<ApiResponse<ReviewDto>>> UpdateReview(int id, CreateReviewDto updateReviewDto)
         {
@@ -219,7 +220,8 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // DELETE: api/Reviews/{id}
+        // DELETE: api/Reviews/{id} - Yêu cầu permission Review:Delete + phải là owner
+        [RequirePermission("Review", "Delete")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<ApiResponse<object>>> DeleteReview(int id)
         {

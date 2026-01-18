@@ -15,7 +15,8 @@ namespace DigitalLibrary.Models
         [ForeignKey(nameof(Document))]
         public int DocumentId { get; set; }
 
-        public virtual User? User { get; set; }
+        public virtual ApplicationUser? User { get; set; }
         public virtual Document? Document { get; set; }
     }
+
 }

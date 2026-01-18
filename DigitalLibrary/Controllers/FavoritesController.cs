@@ -107,7 +107,6 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                // Kiểm tra tài liệu có tồn tại
                 var document = await _context.Documents.FindAsync(documentId);
                 if (document == null)
                 {
@@ -118,7 +117,6 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                // Kiểm tra đã thêm vào yêu thích chưa
                 var existingFav = await _context.FavDocs
                     .FirstOrDefaultAsync(f => f.UserId == userId.Value && f.DocumentId == documentId);
 

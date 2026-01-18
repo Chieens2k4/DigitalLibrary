@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DigitalLibrary.Data;
 using DigitalLibrary.DTOs;
-using DigitalLibrary.Services;
+using DigitalLibrary.Models;
 using System.Security.Claims;
 
 namespace DigitalLibrary.Controllers
@@ -14,12 +15,12 @@ namespace DigitalLibrary.Controllers
     public class UserController : ControllerBase
     {
         private readonly DigitalLibraryContext _context;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserController(DigitalLibraryContext context, IPasswordHasher passwordHasher)
+        public UserController(DigitalLibraryContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
         }
 
         private int? GetCurrentUserId()
@@ -44,9 +45,7 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                var user = await _context.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.UserId == userId.Value);
+                var user = await _userManager.FindByIdAsync(userId.Value.ToString());
 
                 if (user == null)
                 {
@@ -57,15 +56,17 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
+                var roles = await _userManager.GetRolesAsync(user);
+
                 var profileDto = new UserProfileDto
                 {
-                    UserId = user.UserId,
-                    Email = user.Email,
+                    UserId = user.Id,
+                    Email = user.Email ?? "",
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     DateOfBirth = user.DateOfBirth,
                     Gender = user.Gender,
-                    RoleName = user.Role?.RoleName ?? "",
+                    RoleName = roles.FirstOrDefault() ?? "",
                     CreatedAt = user.CreatedAt
                 };
 
@@ -102,9 +103,7 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                var user = await _context.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.UserId == userId.Value);
+                var user = await _userManager.FindByIdAsync(userId.Value.ToString());
 
                 if (user == null)
                 {
@@ -120,17 +119,28 @@ namespace DigitalLibrary.Controllers
                 user.DateOfBirth = updateDto.DateOfBirth;
                 user.Gender = updateDto.Gender;
 
-                await _context.SaveChangesAsync();
+                var result = await _userManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new ApiResponse<UserProfileDto>
+                    {
+                        Success = false,
+                        Message = string.Join(", ", result.Errors.Select(e => e.Description))
+                    });
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
 
                 var profileDto = new UserProfileDto
                 {
-                    UserId = user.UserId,
-                    Email = user.Email,
+                    UserId = user.Id,
+                    Email = user.Email ?? "",
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     DateOfBirth = user.DateOfBirth,
                     Gender = user.Gender,
-                    RoleName = user.Role?.RoleName ?? "",
+                    RoleName = roles.FirstOrDefault() ?? "",
                     CreatedAt = user.CreatedAt
                 };
 
@@ -167,7 +177,7 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                var user = await _context.Users.FindAsync(userId.Value);
+                var user = await _userManager.FindByIdAsync(userId.Value.ToString());
                 if (user == null)
                 {
                     return NotFound(new ApiResponse<object>
@@ -177,19 +187,16 @@ namespace DigitalLibrary.Controllers
                     });
                 }
 
-                // Kiểm tra mật khẩu cũ
-                if (!_passwordHasher.VerifyPassword(changePasswordDto.OldPassword, user.PasswordHash))
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+
+                if (!result.Succeeded)
                 {
                     return BadRequest(new ApiResponse<object>
                     {
                         Success = false,
-                        Message = "Mật khẩu cũ không chính xác"
+                        Message = string.Join(", ", result.Errors.Select(e => e.Description))
                     });
                 }
-
-                // Cập nhật mật khẩu mới
-                user.PasswordHash = _passwordHasher.HashPassword(changePasswordDto.NewPassword);
-                await _context.SaveChangesAsync();
 
                 return Ok(new ApiResponse<object>
                 {

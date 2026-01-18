@@ -24,7 +24,7 @@ namespace DigitalLibrary.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public virtual User? User { get; set; }
+        public virtual ApplicationUser? User { get; set; }
         public virtual Document? Document { get; set; }
     }
 }

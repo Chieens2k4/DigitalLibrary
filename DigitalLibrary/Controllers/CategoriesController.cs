@@ -16,7 +16,7 @@ namespace DigitalLibrary.Controllers
             _context = context;
         }
 
-        // GET: api/Categories
+        // GET: api/Categories - Public
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<CategoryDto>>>> GetCategories()
         {
@@ -50,7 +50,7 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // GET: api/Categories/{id}
+        // GET: api/Categories/{id} - Public
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<CategoryDto>>> GetCategory(int id)
         {

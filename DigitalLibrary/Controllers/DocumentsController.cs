@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DigitalLibrary.Data;
 using DigitalLibrary.DTOs;
 using DigitalLibrary.Models;
+using DigitalLibrary.Authorization;
 using System.Security.Claims;
 
 namespace DigitalLibrary.Controllers
@@ -25,7 +26,7 @@ namespace DigitalLibrary.Controllers
             return int.TryParse(userIdClaim, out var userId) ? userId : null;
         }
 
-        // GET: api/Documents
+        // GET: api/Documents - Public, không cần permission
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResultDto<DocumentDto>>>> GetDocuments(
             [FromQuery] DocumentSearchDto searchDto)
@@ -49,20 +50,17 @@ namespace DigitalLibrary.Controllers
                         (d.AuthorName != null && d.AuthorName.ToLower().Contains(searchTerm)));
                 }
 
-                // Lọc theo danh mục
                 if (searchDto.CategoryId.HasValue)
                 {
                     query = query.Where(d => d.CategoryId == searchDto.CategoryId.Value);
                 }
 
-                // Lọc theo tác giả
                 if (!string.IsNullOrWhiteSpace(searchDto.AuthorName))
                 {
                     query = query.Where(d => d.AuthorName != null &&
                         d.AuthorName.ToLower().Contains(searchDto.AuthorName.ToLower()));
                 }
 
-                // Lọc theo năm xuất bản
                 if (searchDto.PublishYear.HasValue)
                 {
                     query = query.Where(d => d.PublishYear == searchDto.PublishYear.Value);
@@ -148,7 +146,7 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // GET: api/Documents/{id}
+        // GET: api/Documents/{id} - Public, không cần permission
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<DocumentDto>>> GetDocument(int id)
         {
@@ -210,7 +208,7 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // POST: api/Documents/{id}/view
+        // POST: api/Documents/{id}/view - Chỉ cần đăng nhập
         [Authorize]
         [HttpPost("{id}/view")]
         public async Task<ActionResult<ApiResponse<object>>> LogView(int id)
@@ -263,8 +261,8 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // POST: api/Documents/{id}/download
-        [Authorize]
+        // POST: api/Documents/{id}/download - Yêu cầu permission Document:Download
+        [RequirePermission("Document", "Download")]
         [HttpPost("{id}/download")]
         public async Task<ActionResult<ApiResponse<object>>> LogDownload(int id)
         {
@@ -317,7 +315,7 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // GET: api/Documents/popular
+        // GET: api/Documents/popular - Public
         [HttpGet("popular")]
         public async Task<ActionResult<ApiResponse<List<DocumentDto>>>> GetPopularDocuments([FromQuery] int count = 10)
         {
@@ -376,7 +374,7 @@ namespace DigitalLibrary.Controllers
             }
         }
 
-        // GET: api/Documents/recent
+        // GET: api/Documents/recent - Public
         [HttpGet("recent")]
         public async Task<ActionResult<ApiResponse<List<DocumentDto>>>> GetRecentDocuments([FromQuery] int count = 10)
         {

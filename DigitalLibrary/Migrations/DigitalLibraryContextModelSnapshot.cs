@@ -22,6 +22,173 @@ namespace DigitalLibrary.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DigitalLibrary.Models.ApplicationRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConcurrencyStamp = "074ef205-f0df-4873-b5bd-5fe39a1ab448",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(658),
+                            Description = "Quản trị viên hệ thống",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ConcurrencyStamp = "72f5eef3-14bb-480d-be0c-e55e3db747c8",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(723),
+                            Description = "Thủ thư",
+                            Name = "Librarian",
+                            NormalizedName = "LIBRARIAN"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ConcurrencyStamp = "d7d40a46-a0f4-4455-b5ca-cbe464b51f5a",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(725),
+                            Description = "Giáo viên",
+                            Name = "Teacher",
+                            NormalizedName = "TEACHER"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ConcurrencyStamp = "4e5f9e3e-9f87-4e49-98ab-1ab221c078b3",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(728),
+                            Description = "Sinh viên",
+                            Name = "Student",
+                            NormalizedName = "STUDENT"
+                        });
+                });
+
+            modelBuilder.Entity("DigitalLibrary.Models.ApplicationUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool?>("Gender")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("DigitalLibrary.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -128,6 +295,9 @@ namespace DigitalLibrary.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DownloadLogId"));
 
+                    b.Property<int?>("ApplicationUserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
 
@@ -138,6 +308,8 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("DownloadLogId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("DocumentId");
 
@@ -154,6 +326,9 @@ namespace DigitalLibrary.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FavDocId"));
 
+                    b.Property<int?>("ApplicationUserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
 
@@ -161,6 +336,8 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("FavDocId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("DocumentId");
 
@@ -176,6 +353,9 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<int?>("ApplicationUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Comment")
                         .HasMaxLength(500)
@@ -194,6 +374,8 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ReviewId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("DocumentId");
 
@@ -217,28 +399,484 @@ namespace DigitalLibrary.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Role");
+                });
+
+            modelBuilder.Entity("DigitalLibrary.Models.RoleClaim", b =>
+                {
+                    b.Property<int>("RoleClaimId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleClaimId"));
+
+                    b.Property<string>("ClaimType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClaimValue")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsGranted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleClaimId");
+
+                    b.HasIndex("RoleId", "ClaimType", "ClaimValue")
+                        .IsUnique();
+
+                    b.ToTable("RolePermissions", (string)null);
 
                     b.HasData(
                         new
                         {
-                            RoleId = 1,
-                            RoleName = "Admin"
+                            RoleClaimId = 1,
+                            ClaimType = "User",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(915),
+                            IsGranted = true,
+                            RoleId = 1
                         },
                         new
                         {
-                            RoleId = 2,
-                            RoleName = "Librarian"
+                            RoleClaimId = 2,
+                            ClaimType = "User",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(922),
+                            IsGranted = true,
+                            RoleId = 1
                         },
                         new
                         {
-                            RoleId = 3,
-                            RoleName = "Student"
+                            RoleClaimId = 3,
+                            ClaimType = "User",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(923),
+                            IsGranted = true,
+                            RoleId = 1
                         },
                         new
                         {
-                            RoleId = 4,
-                            RoleName = "Teacher"
+                            RoleClaimId = 4,
+                            ClaimType = "User",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(924),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 5,
+                            ClaimType = "Document",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(924),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 6,
+                            ClaimType = "Document",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(926),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 7,
+                            ClaimType = "Document",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(926),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 8,
+                            ClaimType = "Document",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(927),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 9,
+                            ClaimType = "Document",
+                            ClaimValue = "Download",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(928),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 10,
+                            ClaimType = "Document",
+                            ClaimValue = "Upload",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(929),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 11,
+                            ClaimType = "Category",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(929),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 12,
+                            ClaimType = "Category",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(929),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 13,
+                            ClaimType = "Category",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(930),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 14,
+                            ClaimType = "Category",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(930),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 15,
+                            ClaimType = "Review",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(931),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 16,
+                            ClaimType = "Review",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(931),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 17,
+                            ClaimType = "Review",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(932),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 18,
+                            ClaimType = "Review",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(933),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 19,
+                            ClaimType = "Review",
+                            ClaimValue = "Moderate",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(933),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 20,
+                            ClaimType = "Dashboard",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(934),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 21,
+                            ClaimType = "Dashboard",
+                            ClaimValue = "Export",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(934),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 22,
+                            ClaimType = "System",
+                            ClaimValue = "Configure",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(935),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 23,
+                            ClaimType = "System",
+                            ClaimValue = "Backup",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(935),
+                            IsGranted = true,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RoleClaimId = 24,
+                            ClaimType = "Document",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(939),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 25,
+                            ClaimType = "Document",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(940),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 26,
+                            ClaimType = "Document",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(941),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 27,
+                            ClaimType = "Document",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(941),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 28,
+                            ClaimType = "Document",
+                            ClaimValue = "Download",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(942),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 29,
+                            ClaimType = "Document",
+                            ClaimValue = "Upload",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(942),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 30,
+                            ClaimType = "Category",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(942),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 31,
+                            ClaimType = "Category",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(943),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 32,
+                            ClaimType = "Category",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(943),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 33,
+                            ClaimType = "Category",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(944),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 34,
+                            ClaimType = "Review",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(945),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 35,
+                            ClaimType = "Review",
+                            ClaimValue = "Moderate",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(945),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 36,
+                            ClaimType = "Dashboard",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(946),
+                            IsGranted = true,
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            RoleClaimId = 37,
+                            ClaimType = "Document",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(948),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 38,
+                            ClaimType = "Document",
+                            ClaimValue = "Download",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(949),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 39,
+                            ClaimType = "Document",
+                            ClaimValue = "Upload",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(950),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 40,
+                            ClaimType = "Review",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(950),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 41,
+                            ClaimType = "Review",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(950),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 42,
+                            ClaimType = "Review",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(951),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 43,
+                            ClaimType = "Review",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(951),
+                            IsGranted = true,
+                            RoleId = 3
+                        },
+                        new
+                        {
+                            RoleClaimId = 44,
+                            ClaimType = "Document",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(953),
+                            IsGranted = true,
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            RoleClaimId = 45,
+                            ClaimType = "Document",
+                            ClaimValue = "Download",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(954),
+                            IsGranted = true,
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            RoleClaimId = 46,
+                            ClaimType = "Review",
+                            ClaimValue = "View",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(955),
+                            IsGranted = true,
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            RoleClaimId = 47,
+                            ClaimType = "Review",
+                            ClaimValue = "Create",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(955),
+                            IsGranted = true,
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            RoleClaimId = 48,
+                            ClaimType = "Review",
+                            ClaimValue = "Edit",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(956),
+                            IsGranted = true,
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            RoleClaimId = 49,
+                            ClaimType = "Review",
+                            ClaimValue = "Delete",
+                            CreatedAt = new DateTime(2026, 1, 19, 0, 20, 29, 346, DateTimeKind.Local).AddTicks(956),
+                            IsGranted = true,
+                            RoleId = 4
                         });
                 });
 
@@ -285,12 +923,9 @@ namespace DigitalLibrary.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.ViewLog", b =>
@@ -300,6 +935,9 @@ namespace DigitalLibrary.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ViewLogId"));
+
+                    b.Property<int?>("ApplicationUserId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
@@ -312,11 +950,116 @@ namespace DigitalLibrary.Migrations
 
                     b.HasKey("ViewLogId");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("DocumentId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("ViewLogs");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.Document", b =>
@@ -332,6 +1075,10 @@ namespace DigitalLibrary.Migrations
 
             modelBuilder.Entity("DigitalLibrary.Models.DownloadLog", b =>
                 {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany("DownloadLogs")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("DigitalLibrary.Models.Document", "Document")
                         .WithMany("DownloadLogs")
                         .HasForeignKey("DocumentId")
@@ -351,6 +1098,10 @@ namespace DigitalLibrary.Migrations
 
             modelBuilder.Entity("DigitalLibrary.Models.FavDoc", b =>
                 {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany("FavDocs")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("DigitalLibrary.Models.Document", "Document")
                         .WithMany("FavDocs")
                         .HasForeignKey("DocumentId")
@@ -370,6 +1121,10 @@ namespace DigitalLibrary.Migrations
 
             modelBuilder.Entity("DigitalLibrary.Models.Review", b =>
                 {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("DigitalLibrary.Models.Document", "Document")
                         .WithMany("Reviews")
                         .HasForeignKey("DocumentId")
@@ -385,6 +1140,17 @@ namespace DigitalLibrary.Migrations
                     b.Navigation("Document");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DigitalLibrary.Models.RoleClaim", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationRole", "Role")
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.User", b =>
@@ -392,7 +1158,7 @@ namespace DigitalLibrary.Migrations
                     b.HasOne("DigitalLibrary.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -400,6 +1166,10 @@ namespace DigitalLibrary.Migrations
 
             modelBuilder.Entity("DigitalLibrary.Models.ViewLog", b =>
                 {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany("ViewLogs")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("DigitalLibrary.Models.Document", "Document")
                         .WithMany("ViewLogs")
                         .HasForeignKey("DocumentId")
@@ -415,6 +1185,73 @@ namespace DigitalLibrary.Migrations
                     b.Navigation("Document");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("DigitalLibrary.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DigitalLibrary.Models.ApplicationRole", b =>
+                {
+                    b.Navigation("RoleClaims");
+                });
+
+            modelBuilder.Entity("DigitalLibrary.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("DownloadLogs");
+
+                    b.Navigation("FavDocs");
+
+                    b.Navigation("Reviews");
+
+                    b.Navigation("ViewLogs");
                 });
 
             modelBuilder.Entity("DigitalLibrary.Models.Category", b =>

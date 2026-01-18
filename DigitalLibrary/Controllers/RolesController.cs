@@ -1,12 +1,7 @@
-﻿        using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DigitalLibrary.Data;
-using DigitalLibrary.Models;
+using DigitalLibrary.DTOs;
 
 namespace DigitalLibrary.Controllers
 {
@@ -21,88 +16,79 @@ namespace DigitalLibrary.Controllers
             _context = context;
         }
 
-        // GET: api/Roles
+        // GET: api/Roles - Public (để hiển thị trong registration form, etc.)
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRole()
+        public async Task<ActionResult<ApiResponse<List<RoleDto>>>> GetRoles()
         {
-            return await _context.Roles.ToListAsync();
-        }
-
-        // GET: api/Roles/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Role>> GetRole(int id)
-        {
-            var role = await _context.Roles.FindAsync(id);
-
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            return role;
-        }
-
-        // PUT: api/Roles/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(int id, Role role)
-        {
-            if (id != role.RoleId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(role).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoleExists(id))
+                var roles = await _context.Roles
+                    .OrderBy(r => r.Id)
+                    .ToListAsync();
+
+                var roleDtos = roles.Select(r => new RoleDto
                 {
-                    return NotFound();
-                }
-                else
+                    RoleId = r.Id,
+                    RoleName = r.Name ?? "",
+                    Description = r.Description
+                }).ToList();
+
+                return Ok(new ApiResponse<List<RoleDto>>
                 {
-                    throw;
-                }
+                    Success = true,
+                    Message = "Lấy danh sách vai trò thành công",
+                    Data = roleDtos
+                });
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Roles
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Role>> PostRole(Role role)
-        {
-            _context.Roles.Add(role);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRole", new { id = role.RoleId }, role);
-        }
-
-        // DELETE: api/Roles/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
-        {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return StatusCode(500, new ApiResponse<List<RoleDto>>
+                {
+                    Success = false,
+                    Message = $"Lỗi server: {ex.Message}"
+                });
             }
-
-            _context.Roles.Remove(role);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool RoleExists(int id)
+        // GET: api/Roles/{id} - Public
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ApiResponse<RoleDto>>> GetRole(int id)
         {
-            return _context.Roles.Any(e => e.RoleId == id);
+            try
+            {
+                var role = await _context.Roles.FindAsync(id);
+
+                if (role == null)
+                {
+                    return NotFound(new ApiResponse<RoleDto>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy vai trò"
+                    });
+                }
+
+                var roleDto = new RoleDto
+                {
+                    RoleId = role.Id,
+                    RoleName = role.Name ?? "",
+                    Description = role.Description
+                };
+
+                return Ok(new ApiResponse<RoleDto>
+                {
+                    Success = true,
+                    Message = "Lấy thông tin vai trò thành công",
+                    Data = roleDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<RoleDto>
+                {
+                    Success = false,
+                    Message = $"Lỗi server: {ex.Message}"
+                });
+            }
         }
     }
 }
